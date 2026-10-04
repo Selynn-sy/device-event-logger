@@ -1,6 +1,6 @@
 import express from 'express';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { z } from 'zod';
 
 // ===== 配置 =====
@@ -65,8 +65,6 @@ app.post('/api/log', async (req, res) => {
 });
 
 // ===== MCP =====
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-
 function createServer() {
   const server = new McpServer({ name: 'device-event-logger', version: '1.0.0' });
   server.tool(
