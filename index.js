@@ -65,7 +65,7 @@ app.post('/api/log', async (req, res) => {
 });
 
 // ===== MCP =====
-const transports = {};
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 
 function createServer() {
   const server = new McpServer({ name: 'device-event-logger', version: '1.0.0' });
@@ -80,18 +80,12 @@ function createServer() {
   return server;
 }
 
-app.get('/sse', async (req, res) => {
+app.post('/mcp', async (req, res) => {
   const server = createServer();
-  const transport = new SSEServerTransport('/messages', res);
-  transports[transport.sessionId] = transport;
-  res.on('close', () => delete transports[transport.sessionId]);
+  const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+  res.on('close', () => transport.close());
   await server.connect(transport);
-});
-
-app.post('/messages', async (req, res) => {
-  const t = transports[req.query.sessionId];
-  if (t) await t.handlePostMessage(req, res);
-  else res.status(400).json({ error: 'no session' });
+  await transport.handleRequest(req, res);
 });
 
 // ===== 启动 =====
