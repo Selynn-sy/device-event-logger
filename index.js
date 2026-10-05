@@ -179,7 +179,8 @@ const server = http.createServer((req, res) => {
 
   // --- SSE传输 ---
   if (url.pathname === '/sse' && req.method === 'GET') {
-    const clientId = crypto.randomUUID();
+    const clientId = crypto.randomBytes(16).toString('hex');
+
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
