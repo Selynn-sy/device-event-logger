@@ -109,6 +109,18 @@ var server = http.createServer(function(req, res) {
     return;
   }
 
+  if (url.pathname === '/api/blocked' && req.method === 'GET') {
+    var app = url.params.app;
+    if (!app) { res.writeHead(400); res.end('0'); return; }
+    var allowed = permissions[app] === true;
+    if (!allowed) {
+      sendBark('Caught you', 'Daddy didn\'t approve ' + app + '. Come back now, kitten.');
+    }
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end(allowed ? '0' : '1');
+    return;
+  }
+
   if (url.pathname === '/api/permission/set' && req.method === 'GET') {
     var app = url.params.app;
     var status = url.params.status;
